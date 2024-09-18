@@ -90,7 +90,7 @@ table {
     height: 100%;
     align-items: center;
     justify-items: center;
-    font-size: clamp(1rem, 2rem, 4rem);
+    font-size: clamp(0.5rem, 2rem, 4rem);
 
 }
 
@@ -120,7 +120,7 @@ table {
     background-color: var(--back-clr);
     border: 2px solid var(--side-clr);
     color: var(--text-clr);
-    font-size: clamp(1rem, 2rem, 4rem);
+    font-size: clamp(0.5rem, 2rem, 4rem);
     align-content: center;
     text-align: center;
     word-wrap: break-word;
@@ -132,7 +132,7 @@ table {
     background-color: var(--back-clr);
     border: 2px solid var(--side-clr);
     color: var(--text-clr);
-    font-size: clamp(1rem, 2rem, 4rem);
+    font-size: clamp(0.5rem, 2rem, 4rem);
     align-content: center;
     text-align: center;
     word-wrap: break-word;
@@ -157,7 +157,7 @@ table {
     background-color: var(--back-clr);
     color: var(--text-clr);
     gap: 1rem;
-    font-size: clamp(1rem, 2rem, 4rem);
+    font-size: clamp(0.5rem, 2rem, 4rem);
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -176,13 +176,13 @@ table {
 #bottom {
     display: flex;
     position: absolute;
-    width: 100vw;
-    height: 50vh;
+    width: 100%;
+    height: 50%;
     border: 2px solid var(--side-clr);
     background-color: var(--back-clr);
     color: var(--text-clr);
     gap: 1rem;
-    font-size: clamp(1rem, 2rem, 4rem);
+    font-size: clamp(0.5rem, 2rem, 4rem);
     align-items: center;
     justify-content: center;
     text-align: center;
@@ -195,6 +195,10 @@ table {
     background-color: var(--back-clr);
     color: var(--text-clr);
     width: clamp(15ch, 17ch, 20ch);
+}
+
+#top, #bottom {
+    flex-direction: column;
 }
 
 .slide-right {
@@ -219,7 +223,7 @@ table {
     }
 
     to {
-        left: 100vw;
+        left: 100%;
         display: none;
     }
 
@@ -231,7 +235,7 @@ table {
     }
 
     to {
-        right: 100vw;
+        right: 100%;
         display: none;
     }
 

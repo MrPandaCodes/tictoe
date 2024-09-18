@@ -62,15 +62,26 @@ function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo"
 	const getActivePlayer = () => activePlayer;
 
 	const printNewRound = () => {
+		possibleMoves(board);
 		console.log(board.printBoard());
 		console.log(`It is a new game, now is ${getActivePlayer().name}'s turn`)
 		display.displayActivePlayer(activePlayer);
 	}
-	const movePossible = (row, column) => board.getBoard()[row][column].getValue() === 0;
+	const moveIsPossible = (row, column) => board.getBoard()[row][column].getValue() === 0;
+	const possibleMoves = (board) => {
+		const list = [];
+		board.getBoard().forEach(row => row.forEach(cell => cell.getValue() === 0 ? list.push(cell) : false))
+		const getList = () => list.length;
+		return {
+			getList,
+		}
+	}
 	const playRound = (row, column) => {
-		if (movePossible(row, column)) {
+
+		if (moveIsPossible(row, column)) {
 			board.putMark(row, column);
 			display.updateBoard(board);
+
 			//Check if win conditions are met
 			if (gameWin()) {
 				console.log(`${getActivePlayer().name} wins s`);
@@ -80,10 +91,22 @@ function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo"
 				display.createBoard(board)
 				//Create a new board array
 				board = gameboard()
+				//IF playagain button pressed then do 
 				switchPlayer();
 				printNewRound()
 				return;
 			};
+			if (!possibleMoves(board).getList() > 0) {
+				console.log("Game is a draw")
+				display.deleteBoard()
+				display.createBoard(board)
+				//Create a new board array
+				board = gameboard()
+				//IF playagain button pressed then do 
+				switchPlayer();
+				printNewRound()
+				return;
+			}
 
 			switchPlayer();
 			display.displayActivePlayer(activePlayer);
@@ -197,7 +220,7 @@ const displayGame = () => {
 	}
 	const displayActivePlayer = (activePlayer) => {
 		const playerListEls = document.querySelectorAll("#title > div");
-		playerListEls[1-activePlayer.playernumb].classList.remove("active-player");
+		playerListEls[1 - activePlayer.playernumb].classList.remove("active-player");
 		playerListEls[activePlayer.playernumb].classList.add("active-player");
 	}
 	return {
@@ -242,4 +265,4 @@ const setPlayerName = (playersObject) => {
 }
 const game = gameController();
 
-// CREATE A FUNCTION TO HIGHLIGHT ACTIVE PLAYER 
+// MAKE GAME START FTER PLAY AGAİN

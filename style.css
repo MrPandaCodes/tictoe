@@ -71,14 +71,14 @@ table {
 
 }
 
-#game>div {
+#game>button {
     border: 2px solid var(--side-clr);
     background-color: var(--back-clr);
     align-content: center;
     text-align: center;
 }
 
-#game>div:hover {
+#game>button.hover:hover {
     background-color: var(--main-clr);
     color: var(--back-clr);
     border: 2px solid var(--text-clr);
@@ -203,12 +203,12 @@ table {
 }
 
 .slide-right {
-    animation: 3s 1 forwards slideRight;
+    animation: 1s 1 forwards slideRight;
     animation-timing-function: ease-in;
 }
 
 .slide-left {
-    animation: 3s 1 forwards slideLeft;
+    animation: 1s 1 forwards slideLeft;
     animation-timing-function: ease-in;
 }
 

@@ -1,7 +1,7 @@
 function gameboard() {
 	const row = 3;
 	const column = 3;
-	let board = [];
+	const board = [];
 
 	for (let i = 0; i < row; i++) {
 		board[i] = [];
@@ -19,7 +19,7 @@ function gameboard() {
 	return {
 		getBoard,
 		printBoard,
-		putMark
+		putMark,
 	};
 }
 function cell() {
@@ -34,9 +34,10 @@ function cell() {
 		getValue
 	}
 }
-function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo") {
-	let board = gameboard();
-	let display = displayGame();
+//Save boards
+const boardArr = [gameboard()];
+const gameController = (playerOneName = "PlayerOne", playerTwoName = "PlayerTwo") => {
+	const display = displayGame();
 	const players = [
 		{
 			name: playerOneName,
@@ -54,7 +55,7 @@ function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo"
 	//Record player entered names
 	setPlayerName(players);
 	//Display the board 
-	display.createBoard(board);
+	display.createBoard(boardArr[boardArr.length - 1]);
 	//Display scores
 	display.displayScores(players);
 	let activePlayer = players[0];
@@ -62,57 +63,59 @@ function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo"
 	const getActivePlayer = () => activePlayer;
 
 	const printNewRound = () => {
-		possibleMoves(board);
-		console.log(board.printBoard());
+		console.log("new print", boardArr[boardArr.length - 1].printBoard());
 		console.log(`It is a new game, now is ${getActivePlayer().name}'s turn`)
 		display.displayActivePlayer(activePlayer);
 	}
-	const moveIsPossible = (row, column) => board.getBoard()[row][column].getValue() === 0;
-	const possibleMoves = (board) => {
+
+	playAgain = function () {
+		//Create a new board 
+		board = gameboard();
+		boardArr.push(board);
+
+
+		//Display the new board
+		display.deleteBoard()
+		display.createBoard(boardArr[boardArr.length - 1])
+		console.log(getActivePlayer())
+		switchPlayer();
+		console.log(getActivePlayer())
+		printNewRound();
+	}
+	moveIsPossible = function (row, column) {
+		return boardArr[boardArr.length - 1].getBoard()[row][column].getValue() === 0;
+	}
+	possibleMoves = function (boardArrObject) {
 		const list = [];
-		board.getBoard().forEach(row => row.forEach(cell => cell.getValue() === 0 ? list.push(cell) : false))
+		boardArrObject.getBoard().forEach(row => row.forEach(cell => cell.getValue() === 0 ? list.push(cell) : false))
 		const getList = () => list.length;
 		return {
 			getList,
 		}
 	}
-	const playRound = (row, column) => {
-
+	playRound = function (row, column) {
 		if (moveIsPossible(row, column)) {
-			board.putMark(row, column);
-			display.updateBoard(board);
+			boardArr[boardArr.length - 1].putMark(row, column);
+			display.updateBoard(boardArr[boardArr.length - 1]);
 
 			//Check if win conditions are met
 			if (gameWin()) {
 				console.log(`${getActivePlayer().name} wins s`);
-				getActivePlayer().wincount += 1;
+				getActivePlayer().wincount++;
 				display.displayScores(players)
-				display.deleteBoard()
-				display.createBoard(board)
-				//Create a new board array
-				board = gameboard()
-				//IF playagain button pressed then do 
-				switchPlayer();
-				printNewRound()
+				display.displayEndGame()
 				return;
 			};
-			if (!possibleMoves(board).getList() > 0) {
+			if (!possibleMoves(boardArr[boardArr.length - 1]).getList() > 0) {
 				console.log("Game is a draw")
-				display.deleteBoard()
-				display.createBoard(board)
-				//Create a new board array
-				board = gameboard()
-				//IF playagain button pressed then do 
-				switchPlayer();
-				printNewRound()
+				display.displayEndGame()
 				return;
 			}
 
 			switchPlayer();
 			display.displayActivePlayer(activePlayer);
-			console.log(board.printBoard());
+			console.log(boardArr[boardArr.length - 1].printBoard());
 			console.log(`It is ${getActivePlayer().name}'s turn`)
-			//alert(`It is ${getActivePlayer().name}'s turn`)
 		}
 		else {
 			alert("Can not put a mark there.");
@@ -125,7 +128,7 @@ function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo"
 		let countDg1 = 0;
 		let columnArr = [];
 		//Check rows
-		if ((board.getBoard().filter(row => (row.filter(cell => cell.getValue() === `${getActivePlayer().mark}`).length > 2))).length > 0) {
+		if ((boardArr[boardArr.length - 1].getBoard().filter(row => (row.filter(cell => cell.getValue() === `${getActivePlayer().mark}`).length > 2))).length > 0) {
 
 			return true;
 		}
@@ -134,35 +137,33 @@ function gameController(playerOneName = "PlayerOne", playerTwoName = "PlayerTwo"
 			//Check columns
 			columnArr[i] = [];
 			for (let j = 0; j < 3; j++) {
-				columnArr[i].push(board.getBoard()[j][i].getValue())
+				columnArr[i].push(boardArr[boardArr.length - 1].getBoard()[j][i].getValue())
 				if (columnArr[i].length > 2 && columnArr[i].every(cell => cell === `${getActivePlayer().mark}`)) {
 
 					return true;
 				}
 			}
 			//Check diagonals
-			if ((board.getBoard()[i][i].getValue() === `${getActivePlayer().mark}`)) {
+			if ((boardArr[boardArr.length - 1].getBoard()[i][i].getValue() === `${getActivePlayer().mark}`)) {
 				countDg++
 			}
-			if ((board.getBoard()[i][2 - i].getValue() === `${getActivePlayer().mark}`)) {
+			if ((boardArr[boardArr.length - 1].getBoard()[i][2 - i].getValue() === `${getActivePlayer().mark}`)) {
 				countDg1++
 			}
 		}
 		//Return true if diagonal win is achieved 
 		if (countDg > 2 || countDg1 > 2) {
-
-			console.log(countDg, countDg1);
 			return true;
 		}
 
 	}
-	//const gameReset = 
-	printNewRound();
+
 
 	return {
 		playRound,
 		getActivePlayer,
 		players,
+		playAgain
 	}
 }
 //Function for displaying the game state on page
@@ -170,29 +171,32 @@ const displayGame = () => {
 	const gameEl = document.querySelector("#game");
 
 	//Create divs equal to number of cells on board, display them on id.game
-	const createBoard = (boardObject) => {
+	createBoard = function (boardObject) {
 		const rowLength = boardObject.getBoard().length;
 		const columnLength = boardObject.getBoard()[0].length;
 		gameEl.style.grid = `grid: repeat("${rowLength}", 1fr)/repeat("${columnLength}", 1fr);`;
 
 		for (let i = 0; i < rowLength * columnLength; i++) {
-			let el = `<div row="${Math.trunc(i / rowLength)}" col="${i % columnLength}"><div/>`;
+			let el = `<button type="button" row="${Math.trunc(i / rowLength)}" col="${i % columnLength}"></button>`;
 
 
 			gameEl.innerHTML += el;
 		}
 		//Add eventlisteners to get user input 
-		const cells = document.querySelectorAll("#game > div");
+		const cells = document.querySelectorAll("#game > button");
+		cells.forEach(cell => cell.classList.add("hover"));
 		cells.forEach(node => node.addEventListener("click", (node) => {
 			game.playRound(node.target.getAttribute("row"), node.target.getAttribute("col"));
 		}));
 	}
 	const deleteBoard = () => gameEl.innerHTML = "";
 	//Update displayed game board 
-	const updateBoard = (boardObject) => {
-		const cells = document.querySelectorAll("#game > div");
+	updateBoard = function (boardObject) {
+		const cells = document.querySelectorAll("#game > button");
 		const rowLength = boardObject.getBoard().length;
 		const columnLength = boardObject.getBoard()[0].length;
+
+
 		for (let i = 0; i < rowLength; i++) {
 			{
 				for (let j = 0; j < columnLength; j++) {
@@ -212,7 +216,7 @@ const displayGame = () => {
 		title.innerText = players[0].name;
 		title1.innerText = players[1].name;
 	}
-	const displayScores = (players) => {
+	displayScores = function (players) {
 		const score = document.getElementById("score-one");
 		const score1 = document.getElementById("score-two");
 		score.innerText = players[0].wincount;
@@ -223,6 +227,14 @@ const displayGame = () => {
 		playerListEls[1 - activePlayer.playernumb].classList.remove("active-player");
 		playerListEls[activePlayer.playernumb].classList.add("active-player");
 	}
+	const displayEndGame = () => {
+		const elArr = document.querySelectorAll("#game > button");
+		elArr.forEach(el => {
+			el.disabled = true;
+			el.classList.remove("hover")
+		})
+
+	}
 	return {
 		createBoard,
 		deleteBoard,
@@ -230,6 +242,7 @@ const displayGame = () => {
 		displayNames,
 		displayScores,
 		displayActivePlayer,
+		displayEndGame,
 	};
 };
 const setPlayerName = (playersObject) => {
@@ -238,10 +251,14 @@ const setPlayerName = (playersObject) => {
 	const startButton = document.getElementById("start");
 	const top = document.getElementById("top");
 	const bottom = document.getElementById("bottom");
+	//Add event listener to play again button
+	const againButton = document.getElementById("restart");
+
 
 	const display = displayGame();
 	const changeName = () => {
 		if (playerOne.value.length != 0 && playerTwo.value.length != 0) {
+			againButton.addEventListener("click", e => gameController().playAgain());
 			//Save player entered names
 			playersObject[0].name = playerOne.value;
 			playersObject[1].name = playerTwo.value;
@@ -265,4 +282,4 @@ const setPlayerName = (playersObject) => {
 }
 const game = gameController();
 
-// MAKE GAME START FTER PLAY AGAİN
+// FIX SCORE NOT DISPLAYING CORRECTLY AFTER PLAYAGAIN 
